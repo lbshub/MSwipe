@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>swipe</title>
+    <script src="rem.js"></script>
+</head>
+
+<body>
+
+    <style>
+        body,
+        div,
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .swipe-wrapper {
+            position: relative;
+            width: 7.5rem;
+            height: 3.75rem;
+            overflow: hidden;
+            background: #999;
+        }
+        
+        .swipe-scroller {
+            /* display: -webkit-box;
+            display: -webkit-flex;
+            display: flex; */
+            width: 100%;
+            height: 3.75rem;
+        }
+        
+        .swipe-indicator {
+            position: absolute;
+            left: 50%;
+            bottom: 0.2rem;
+            z-index: 10;
+            transform: translate(-50%, 0);
+            height: 0.16rem;
+        }
+        
+        .swipe-indicator span {
+            vertical-align: top;
+            display: inline-block;
+            width: 0.16rem;
+            height: 0.16rem;
+            margin: 0 0.1rem;
+            border-radius: 100%;
+            opacity: 0.5;
+            background: #ebedf0;
+        }
+        
+        .swipe-indicator .active {
+            opacity: 1;
+            background: #eb1717;
+        }
+        
+        .swipe-item {
+            /* -webkit-flex-shrink: 0;
+            flex-shrink: 0; */
+            float: left;
+            width: 7.5rem;
+            height: 3.75rem;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            background: #000;
+        }
+        
+        .swipe-item:nth-child(2) {
+            background: red;
+        }
+        
+        .swipe-item:nth-child(3) {
+            background: blue;
+        }
+        
+        .swipe-item:nth-child(4) {
+            background: green;
+        }
+        
+        .swipe-item:nth-child(5) {
+            background: purple;
+        }
+        
+        .swipe-item img {
+            width: 7.5rem;
+            height: 3.75rem;
+        }
+        
+        @-webkit-keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .loaded {
+            animation: fadeIn 1s both;
+            -webkit-animation: fadeIn 1s both;
+        }
+        
+        .swipe-scroller--vertical .swipe-item {
+            float: none;
+        }
+        
+        .swipe-title {
+            font-size: 0.28rem;
+        }
+        
+        .swipe-button {
+            padding: 0.1rem;
+            vertical-align: top;
+            font-size: 0.24rem;
+            line-height: 1;
+        }
+        
+        .range-wrapper .swipe-item {
+            width: 7.2rem;
+        }
+        
+        .step-wrapper .swipe-item {
+            width: 6.7rem;
+            margin-right: 0.2rem;
+        }
+        
+        .step-wrapper .swipe-item:first-child {
+            margin-left: 0.4rem;
+        }
+        
+        .step-wrapper .swipe-item:last-child {
+            margin-right: 0.4rem;
+        }
+    </style>
+
+    <div style="height:3rem;background: #000;"></div>
+    <div style="height:3rem;background: #000;"></div>
+
+    <h2 class="swipe-title">默认(水平方向 循环切换 显示导航指示 自动播放)</h2>
+    <div class="swipe-wrapper" id="wrapper1">
+        <div class="swipe-scroller">
+            <div class="swipe-item">1</div>
+            <div class="swipe-item">2</div>
+            <div class="swipe-item">3</div>
+            <div class="swipe-item">4</div>
+        </div>
+    </div>
+    <div class="swipe-button">
+        <button onclick="prev()">PREV</button>
+        <button onclick="next()">NEXT</button>
+    </div>
+
+    <h2 class="swipe-title">垂直方向 不循环切换 不显示导航指示 不自动播放</h2>
+    <div class="swipe-wrapper" id="wrapper2">
+        <div class="swipe-scroller swipe-scroller--vertical">
+            <div class="swipe-item">1</div>
+            <div class="swipe-item">2</div>
+            <div class="swipe-item">3</div>
+            <div class="swipe-item">4</div>
+        </div>
+    </div>
+
+    <h2 class="swipe-title">默认 + 图片懒加载</h2>
+    <div class="swipe-wrapper" id="wrapper3">
+        <div class="swipe-scroller">
+            <div class="swipe-item"><img src="images/blank.gif" data-src="images/01.jpg" /></div>
+            <div class="swipe-item"><img src="images/blank.gif" data-src="images/02.jpg" /></div>
+            <div class="swipe-item"><img src="images/blank.gif" data-src="images/03.jpg" /></div>
+            <div class="swipe-item"><img src="images/blank.gif" data-src="images/04.jpg" /></div>
+        </div>
+    </div>
+
+    <div style="height:3rem;background: #000;"></div>
+    <div style="height:3rem;background: #000;"></div>
+
+    <h2 class="swipe-title">其他1 单项尺寸小于容器尺寸时</h2>
+    <div class="swipe-wrapper range-wrapper" id="wrapper4">
+        <div class="swipe-scroller">
+            <div class="swipe-item">1</div>
+            <div class="swipe-item">2</div>
+            <div class="swipe-item">3</div>
+            <div class="swipe-item">4</div>
+            <div class="swipe-item">5</div>
+        </div>
+    </div>
+
+    <h2 class="swipe-title">其他2 单项尺寸小于容器尺寸时 自定义滚动步长</h2>
+    <div class="swipe-wrapper step-wrapper" id="wrapper5">
+        <div class="swipe-scroller">
+            <div class="swipe-item">1</div>
+            <div class="swipe-item">2</div>
+            <div class="swipe-item">3</div>
+            <div class="swipe-item">4</div>
+            <div class="swipe-item">5</div>
+        </div>
+    </div>
+
+    <div style="height:3rem;background: #000;"></div>
+    <div style="height:3rem;background: #000;"></div>
+
+    <script src="../lib/mswipe.js"></script>
+    <script>
+        // 默认
+        let swipe = new MSwipe('#wrapper1')
+        let prev = function() {
+            swipe.prev()
+        }
+        let next = function() {
+            swipe.next()
+        }
+
+        // 垂直方向 不循环切换 不显示导航指示 不自动播放
+        new MSwipe('#wrapper2', {
+            vertical: true,
+            loop: false,
+            showIndicator: false,
+            autoplay: 0
+        })
+
+        // 默认 + 图片懒加载
+        new MSwipe('#wrapper3', {
+            lazyload: true
+        })
+
+        // 单项尺寸小于容器尺寸时 建议：不循环切换 不显示导航指示 不自动播放
+
+        // 其他1 
+        new MSwipe('#wrapper4', {
+            loop: false,
+            showIndicator: false,
+            autoplay: 0
+        })
+
+        // 其他2 自定义滚动步长
+        new MSwipe('#wrapper5', {
+            loop: false,
+            showIndicator: false,
+            autoplay: 0,
+            step: document.querySelector('#wrapper5 .swipe-item').offsetWidth * (6.9 / 6.7)
+        })
+    </script>
+
+</body>
+
+</html>
